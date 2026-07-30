@@ -16,6 +16,7 @@ ROOT = Path(__file__).parent
 SRC = ROOT / "index.html"
 DIST = ROOT / "docs"
 
+DOMAIN = "evalvitals.com"
 DESCRIPTION = (
     "EvalVitals diagnoses why an open-weight model fails, then verifies the "
     "repair against the unmodified baseline."
@@ -72,6 +73,10 @@ def main() -> int:
     )
     # GitHub Pages otherwise runs the output through Jekyll.
     (DIST / ".nojekyll").write_text("", encoding="utf-8")
+    # The custom domain is part of the build, not a file that happens to be
+    # sitting in docs/. Deleting docs/ and rebuilding used to drop this and
+    # silently unbind evalvitals.com.
+    (DIST / "CNAME").write_text(DOMAIN + "\n", encoding="utf-8")
 
     kb = out.stat().st_size / 1024
     print(f"built {out}  ({kb:.1f} KB)")
