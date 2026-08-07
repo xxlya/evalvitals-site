@@ -203,29 +203,6 @@
     max-width: var(--measure);
   }
 
-  /* ---- instrument readout ---- */
-  .readout {
-    background: var(--panel);
-    border: 1px solid var(--hairline);
-    border-radius: 3px;
-    padding: 1.35rem 1.5rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
-    gap: 1.35rem 1.75rem;
-  }
-  .cell { display: flex; flex-direction: column; gap: 0.2rem; }
-  .cell .k {
-    font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.13em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  .cell .v {
-    font-family: var(--mono); font-size: 1.42rem; font-weight: 600;
-    font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
-    line-height: 1.1;
-  }
-  .cell .u { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
-  .v.ok { color: var(--confirmed); }
-
   /* ---- calibration ladder ---- */
   .ladder { display: flex; flex-direction: column; border-top: 1px solid var(--hairline); }
   .rung {
@@ -528,8 +505,8 @@
   .btn:active { transform: scale(0.975); }
   .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-  .readout, .io > div, .hl { transition: box-shadow var(--dur) var(--ease); }
-  .readout:hover, .io > div:hover { box-shadow: var(--lift); }
+  .io > div, .hl { transition: box-shadow var(--dur) var(--ease); }
+  .io > div:hover { box-shadow: var(--lift); }
 
   footer {
     border-top: 1px solid var(--hairline);
@@ -553,8 +530,8 @@
     .topbar::after { display: none; }
   }
   @media (prefers-contrast: more) {
-    .readout, .io > div, .hl, .term, table.cmp td, .split { border-color: var(--ink) !important; }
-    .cell .k, .cell .u, .io .k, figcaption, .tick { color: var(--ink-2) !important; }
+    .io > div, .hl, .term, table.cmp td, .split { border-color: var(--ink) !important; }
+    .io .k, figcaption, .tick { color: var(--ink-2) !important; }
     a { text-decoration-color: currentColor; }
   }
 </style>
@@ -701,26 +678,7 @@
   <section class="row">
     <div class="tick">02 / example</div>
     <div class="stack">
-      <h2>A worked example</h2>
-      <p>
-        One investigation, run end to end and committed to the repository:
-        three Qwen3-VL checkpoints asked whether an object is present in a COCO
-        image. Every number below comes from that run's report file — it is a
-        single example, not an aggregate or a benchmark claim.
-      </p>
-      <div class="readout">
-        <div class="cell"><div class="k">Cases</div><div class="v">606</div><div class="u">3 checkpoints</div></div>
-        <div class="cell"><div class="k">Hallucinations</div><div class="v">126</div><div class="u">20.8%</div></div>
-        <div class="cell"><div class="k">Best separator</div><div class="v">0.82</div><div class="u">AUC [0.78, 0.87]</div></div>
-        <div class="cell"><div class="k">Confirmed</div><div class="v ok">1 / 4</div><div class="u">e-BH, α = 0.05</div></div>
-      </div>
-      <p>
-        In this run, attention focus share separated hallucinations from correct
-        rejections at AUC 0.82. Of four candidate signals, one survived
-        adjudication. The other three did not, and the report says so.
-      </p>
-
-      <h3 style="margin-top:1.4rem">What a full pass looks like</h3>
+      <h2>What a full pass looks like</h2>
       <figure>
         <div class="term">
           <div class="term-bar">
