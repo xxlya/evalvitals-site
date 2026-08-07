@@ -196,6 +196,7 @@
     color: var(--ink-2);
     max-width: var(--measure);
   }
+  .lede b { color: var(--ink); font-weight: 620; }
   .hero-row { padding-top: 3rem; }
 
   h2 {
@@ -222,6 +223,29 @@
     color: var(--ink);
     max-width: var(--measure);
   }
+
+  /* ---- instrument readout ---- */
+  .readout {
+    background: var(--panel);
+    border: 1px solid var(--hairline);
+    border-radius: 3px;
+    padding: 1.35rem 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 1.35rem 1.75rem;
+  }
+  .cell { display: flex; flex-direction: column; gap: 0.2rem; }
+  .cell .k {
+    font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.13em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .cell .v {
+    font-family: var(--mono); font-size: 1.42rem; font-weight: 600;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .cell .u { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+  .v.ok { color: var(--confirmed); }
 
   /* ---- calibration ladder ---- */
   .ladder { display: flex; flex-direction: column; border-top: 1px solid var(--hairline); }
@@ -262,53 +286,6 @@
     .rung { grid-template-columns: 2.6rem 1.1rem minmax(0,1fr); }
     .state { grid-column: 3; padding-top: 0.4rem; }
   }
-
-  /* ---- vitals chart ---- */
-  .vitals { display: flex; flex-direction: column; border-top: 1px solid var(--hairline); }
-  .vitals > div {
-    display: grid; grid-template-columns: 2.6rem minmax(0, 1fr) auto;
-    gap: 0.3rem 1.1rem; align-items: baseline;
-    padding: 0.85rem 0; border-bottom: 1px solid var(--hairline);
-  }
-  .vitals .n {
-    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
-    letter-spacing: 0.05em; color: var(--accent);
-  }
-  .vitals .what { font-size: 0.94rem; line-height: 1.45; color: var(--ink-2); }
-  .vitals .what b { color: var(--ink); font-weight: 620; }
-  .vitals .by {
-    font-family: var(--mono); font-size: 0.63rem; letter-spacing: 0.09em;
-    text-transform: uppercase; color: var(--muted); white-space: nowrap;
-  }
-  @media (max-width: 700px) {
-    .vitals > div { grid-template-columns: 2.6rem minmax(0, 1fr); }
-    .vitals .by { grid-column: 2; }
-  }
-
-  /* Three readings a vital can take. The left band carries the state colour so
-     the triad is legible before a word is read. */
-  .states { display: grid; grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr)); gap: 0.9rem; }
-  .states > div {
-    background: var(--panel);
-    border: 1px solid var(--hairline); border-left-width: 3px;
-    border-radius: 3px; padding: 0.9rem 1rem; min-width: 0;
-    display: flex; flex-direction: column; gap: 0.35rem;
-  }
-  .states .s {
-    font-family: var(--mono); font-size: 0.63rem; letter-spacing: 0.12em;
-    text-transform: uppercase; display: flex; align-items: center; gap: 0.45rem;
-  }
-  .states .s::before {
-    content: ""; width: 7px; height: 7px; border-radius: 50%;
-    background: currentColor; flex: none;
-  }
-  .states p { font-size: 0.88rem; line-height: 1.45; color: var(--ink-2); margin: 0; max-width: none; }
-  .states .nominal    { border-left-color: var(--confirmed); }
-  .states .nominal .s { color: var(--confirmed); }
-  .states .known      { border-left-color: var(--pending); }
-  .states .known .s   { color: var(--pending); }
-  .states .unknown    { border-left-color: var(--refuted); }
-  .states .unknown .s { color: var(--refuted); }
 
   /* ---- evidence ---- */
   /* ---- diagrams ---- */
@@ -572,8 +549,8 @@
   .btn:active { transform: scale(0.975); }
   .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-  .io > div, .hl, .states > div { transition: box-shadow var(--dur) var(--ease); }
-  .io > div:hover, .states > div:hover { box-shadow: var(--lift); }
+  .readout, .io > div, .hl { transition: box-shadow var(--dur) var(--ease); }
+  .readout:hover, .io > div:hover { box-shadow: var(--lift); }
 
   footer {
     border-top: 1px solid var(--hairline);
@@ -597,9 +574,8 @@
     .topbar::after { display: none; }
   }
   @media (prefers-contrast: more) {
-    .io > div, .hl, .term, table.cmp td, .split { border-color: var(--ink) !important; }
-    .states > div { border-top-color: var(--ink) !important; border-right-color: var(--ink) !important; border-bottom-color: var(--ink) !important; }
-    .io .k, figcaption, .tick, .vitals .by { color: var(--ink-2) !important; }
+    .readout, .io > div, .hl, .term, table.cmp td, .split { border-color: var(--ink) !important; }
+    .cell .k, .cell .u, .io .k, figcaption, .tick { color: var(--ink-2) !important; }
     a { text-decoration-color: currentColor; }
   }
 </style>
@@ -623,89 +599,19 @@
       <h1>A self-improving loop that repairs open models automatically — and verifies every fix.</h1>
       <p class="lede">
         Your eval says the model failed. It won't say why, or whether your fix
-        worked. EvalVitals probes the model, finds the structure behind its
-        failures, proposes a mechanism, tests it on cases the analysis never
-        saw, then builds a repair and validates it against the unmodified baseline.
-        A repair that fails escalates to a more invasive class of fix and tries
-        again — so each pass either improves the model against a measured
+        worked. A score is a temperature reading; what you actually need is
+        <b>model health</b> — where the model is failing, what mechanism drives
+        it, how deep a repair has to cut, and whether it held. EvalVitals probes
+        the model, finds the structure behind its failures, proposes a
+        mechanism, tests it on cases the analysis never saw, then builds a
+        repair and validates it against the unmodified baseline. A repair that
+        fails escalates to a more invasive class of fix and tries again — so
+        each pass either improves the model's health against a measured
         baseline, or returns an honest account of why it couldn't.
       </p>
       <div class="cta">
         <a class="btn solid" href="https://github.com/evalvitals/evalvitals">Read a real run</a>
         <a class="btn ghost" href="https://evalvitals.github.io/evalvitals/">Documentation</a>
-      </div>
-
-      <h2 style="margin-top:2.6rem">A score is a temperature. Health is a chart.</h2>
-      <p>
-        One number tells you a model is unwell. It will not say where, why, how
-        deep a fix has to cut, or whether the fix held. <b>Model health</b> is
-        the chart that number stands in for: a small set of vitals, each read on
-        the slice you actually ship against, each produced by a stage of the
-        loop, and each allowed to come back unresolved.
-      </p>
-      <div class="vitals">
-        <div>
-          <div class="n">V1</div>
-          <div class="what"><b>Rate.</b> How often it fails, on your cases rather than a public benchmark's.</div>
-          <div class="by">read by probe</div>
-        </div>
-        <div>
-          <div class="n">V2</div>
-          <div class="what"><b>Structure.</b> Whether those failures cluster into a mode or scatter as noise.</div>
-          <div class="by">read by explore</div>
-        </div>
-        <div>
-          <div class="n">V3</div>
-          <div class="what"><b>Mechanism.</b> The internal signal that separates a failure from a success — stated as a falsifiable claim, then scored on held-out cases.</div>
-          <div class="by">diagnose → verify</div>
-        </div>
-        <div>
-          <div class="n">V4</div>
-          <div class="what"><b>Depth.</b> The cheapest rung of the repair ladder that could causally reach the mechanism.</div>
-          <div class="by">read by repair</div>
-        </div>
-        <div>
-          <div class="n">V5</div>
-          <div class="what"><b>Collateral.</b> What the repair costs on everything it was not aimed at.</div>
-          <div class="by">no-free-lunch check</div>
-        </div>
-        <div>
-          <div class="n">V6</div>
-          <div class="what"><b>Durability.</b> Whether the gain survives a paired re-test against the unmodified baseline.</div>
-          <div class="by">read by re-test</div>
-        </div>
-      </div>
-      <p>
-        A benchmark score reads V1 and stops. Everything a repair decision
-        actually depends on lives in V2 through V6, and none of it is
-        recoverable from the score after the fact.
-      </p>
-
-      <h3 style="margin-top:1.4rem">Three ways a vital can read</h3>
-      <div class="states">
-        <div class="nominal">
-          <div class="s">Nominal</div>
-          <p>Measured, in band, and on the record. A vital nobody measured is not nominal — it is unread, and the report says which.</p>
-        </div>
-        <div class="known">
-          <div class="s">Impaired · diagnosed</div>
-          <p>A confirmed mechanism and a tier that can reach it. This is the only state a repair can act on.</p>
-        </div>
-        <div class="unknown">
-          <div class="s">Impaired · undiagnosed</div>
-          <p>The failure rate is real, but no candidate signal cleared adjudication. Reported as such, not narrated into a cause.</p>
-        </div>
-      </div>
-
-      <div class="hl">
-        <div class="eyebrow">Why the third reading matters</div>
-        <p>
-          Most tooling has no way to return <b>impaired, cause unknown</b> — so
-          it returns a plausible story instead, and the story gets funded. In the
-          committed example, one candidate signal of four survived adjudication;
-          the other three are on record as refuted. <b>An undiagnosed vital is a
-          cheap, honest result; a confidently wrong one costs a cluster.</b>
-        </p>
       </div>
     </div>
   </section>
@@ -715,7 +621,7 @@
     <div class="stack">
       <h2>How one pass works</h2>
       <p>
-        Five stages, and no hand-off between them — each one reads a vital. The agent writes and runs its
+        Five stages, and no hand-off between them. The agent writes and runs its
         own analysis code, selects the statistical tools, proposes the
         hypotheses, generates the repair candidates and works out which tier a
         given mechanism needs. Two stages can send the loop backwards — a
@@ -816,7 +722,26 @@
   <section class="row">
     <div class="tick">02 / example</div>
     <div class="stack">
-      <h2>What a full pass looks like</h2>
+      <h2>A worked example</h2>
+      <p>
+        One investigation, run end to end and committed to the repository:
+        three Qwen3-VL checkpoints asked whether an object is present in a COCO
+        image. Every number below comes from that run's report file — it is a
+        single example, not an aggregate or a benchmark claim.
+      </p>
+      <div class="readout">
+        <div class="cell"><div class="k">Cases</div><div class="v">606</div><div class="u">3 checkpoints</div></div>
+        <div class="cell"><div class="k">Hallucinations</div><div class="v">126</div><div class="u">20.8%</div></div>
+        <div class="cell"><div class="k">Best separator</div><div class="v">0.82</div><div class="u">AUC [0.78, 0.87]</div></div>
+        <div class="cell"><div class="k">Confirmed</div><div class="v ok">1 / 4</div><div class="u">e-BH, α = 0.05</div></div>
+      </div>
+      <p>
+        In this run, attention focus share separated hallucinations from correct
+        rejections at AUC 0.82. Of four candidate signals, one survived
+        adjudication. The other three did not, and the report says so.
+      </p>
+
+      <h3 style="margin-top:1.4rem">What a full pass looks like</h3>
       <figure>
         <div class="term">
           <div class="term-bar">
@@ -1145,10 +1070,9 @@
         cluster.
       </p>
       <p class="thesis">
-        A pass may end without a shipped repair — on the committed example,
-        three of four signals failed adjudication and no candidate below L4 beat
-        the baseline. Knowing a mechanism is unvalidated, before spending a
-        cluster on it, is the cheapest result the loop can return.
+        A run may end inconclusive — on one committed example, zero of four
+        signals cleared adjudication. Knowing a mechanism is unvalidated, before
+        spending a cluster on it, is the cheapest result the loop can return.
       </p>
     </div>
   </section>
@@ -1318,7 +1242,7 @@
   </script>
 
   <footer>
-    <div>EvalVitals — model health for open-weight models</div>
+    <div>EvalVitals — failure analysis for open-weight models</div>
     <div>Every figure on this page is reproducible from the repository.</div>
   </footer>
 
