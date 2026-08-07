@@ -471,20 +471,6 @@
   @keyframes blink { to { visibility: hidden; } }
   @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
 
-  .quote {
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    line-height: 1.65;
-    background: var(--accent-dim);
-    border-left: 2px solid var(--accent);
-    padding: 0.9rem 1.1rem;
-    max-width: var(--measure);
-    overflow-x: auto;
-  }
-  .quote .lbl { color: var(--accent); font-weight: 600; }
-
-  .pairs { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.75rem; }
-
   /* ---- cta ---- */
   .cta { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.5rem; }
   .btn {
@@ -912,9 +898,9 @@
       <h2>Hypothesis testing, not hunches</h2>
       <p>
         Repairing a model is an experimental problem, so the loop runs an
-        experimental protocol. Each pass states a falsifiable claim about the
-        mechanism, predicts what would follow if it were true, and tests that
-        prediction on data reserved before the analysis began.
+        experimental protocol: state a falsifiable claim about the mechanism,
+        predict what follows if it is true, test that prediction on data reserved
+        before the analysis began.
       </p>
 
       <div class="hl">
@@ -952,18 +938,11 @@
             <tr class="us">
               <td>EvalVitals</td>
               <td>Held-out cases, e-BH corrected, paired against the unmodified baseline</td>
-              <td>Every hypothesis, verdict and line of generated code</td>
+              <td>Every hypothesis, verdict and line of generated code, logged against a published JSON Schema</td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      <p>
-        Every hypothesis, generated tool, verdict and fix outcome is written to a
-        structured event log against a published JSON Schema, alongside the
-        analysis code that actually ran. A reviewer can re-run it and point at
-        the line that produced a claim.
-      </p>
 
       <p>
         The guard that makes this work is the order of operations — the split is
@@ -987,29 +966,11 @@
           unchanged baseline with a paired test.
         </figcaption>
       </figure>
-      <p>
-        A surviving mechanism then routes itself. The loop maps the confirmed
-        hypothesis to the cheapest tier that could causally address it, works
-        upward when candidates fail, and hands back the next move — so the
-        decision about what to try next is made from evidence rather than by
-        someone's hunch:
-      </p>
-      <div class="quote">
-        recommendation: {<br>
-        &nbsp;&nbsp;<span class="lbl">"recommend_tier"</span>: "L4",<br>
-        &nbsp;&nbsp;<span class="lbl">"reason"</span>: "attention-concentration mechanism<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is not addressable below parameter space"<br>
-        }
-      </div>
-      <p>
-        Raising the ceiling stays a human call — the one deliberate stop in an
-        otherwise unattended loop, because that is the step that spends a
-        cluster.
-      </p>
       <p class="thesis">
-        A run may end inconclusive — on one committed example, zero of four
-        signals cleared adjudication. Knowing a mechanism is unvalidated, before
-        spending a cluster on it, is the cheapest result the loop can return.
+        A run may end without a shipped repair — on the committed example, three
+        of four signals failed adjudication and no candidate below L4 beat the
+        baseline. Knowing a mechanism is unvalidated, before spending a cluster
+        on it, is the cheapest result the loop can return.
       </p>
     </div>
   </section>
@@ -1055,7 +1016,32 @@
           <h4>Does that published fix generalise?</h4>
           <p>Re-test a reported mechanism and its intervention on held-out cases and across model scales, before adopting it.</p>
         </div>
+        <div>
+          <div class="who">Forward-deployed engineering</div>
+          <h4>The engagement, minus week three</h4>
+          <p>You staff senior engineers to sit inside each customer's failures. Run the loop first and the engagement opens with a diagnosed mechanism instead of spending three weeks arriving at one.</p>
+        </div>
       </div>
+
+      <div class="hl">
+        <div class="eyebrow">What it replaces</div>
+        <p>
+          Today this is a person. A forward-deployed engineer lands on the
+          account, probes the customer's failures by hand, forms a theory, tries
+          fixes, and writes it up — weeks of senior time per customer, and the
+          reasoning leaves when they do. <b>The loop is the diagnostic half of
+          that engagement, unattended and on the record.</b> What stays human is
+          the part an FDE is actually worth paying for: which failures matter to
+          this customer, and whether to spend the cluster.
+        </p>
+      </div>
+      <p>
+        That is the difference between a service priced in headcount and one
+        priced in GPU-hours: the escalated investigation projected in
+        <b>02 / example</b> comes to $64.40 of compute, against an FDE-week for
+        the same diagnosis. The judgement does not go away — the weeks of manual
+        probing that precede it do.
+      </p>
 
     </div>
   </section>
