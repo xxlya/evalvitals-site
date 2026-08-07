@@ -397,7 +397,7 @@
 
   /* ---- comparison ---- */
   .cmp-wrap { overflow-x: auto; min-width: 0; }
-  table.cmp { border-collapse: collapse; width: 100%; min-width: 40rem; font-size: 0.86rem; }
+  table.cmp { border-collapse: collapse; width: 100%; min-width: 50rem; font-size: 0.86rem; }
   table.cmp th, table.cmp td {
     text-align: left; padding: 0.7rem 0.85rem; vertical-align: top;
     border-bottom: 1px solid var(--hairline); line-height: 1.45;
@@ -652,7 +652,7 @@
         <div>
           <div class="k">What comes back</div>
           <ul>
-            <li><b>Verdicts, not vibes.</b> Each candidate signal marked confirmed or refuted on held-out cases, e-BH corrected.</li>
+            <li><b>Verdicts, not vibes.</b> Each candidate signal marked confirmed or refuted on held-out cases, corrected for how many were tried.</li>
             <li><b>An audit trail.</b> <code>analysis.py</code> as it ran, the normalised records, every figure and table, and the run's event log.</li>
             <li><b>A repaired model, or the reason there isn't one.</b> A validated fix measured against the untouched baseline — or a recipe and the tier it needs.</li>
           </ul>
@@ -914,31 +914,51 @@
         </p>
       </div>
 
+      <p>
+        Every approach below returns an answer. What separates them is whether
+        that answer could have come back negative, and what is left behind once
+        the session ends:
+      </p>
       <div class="cmp-wrap">
         <table class="cmp">
           <thead>
-            <tr><th>Approach</th><th>How a fix is judged</th><th>What survives the session</th></tr>
+            <tr>
+              <th>Approach</th>
+              <th>How the claim is checked</th>
+              <th>Can it come back “no”?</th>
+              <th>What survives the session</th>
+            </tr>
           </thead>
           <tbody>
             <tr>
               <td>Read the failure table</td>
-              <td>Spot-check on the same cases that prompted it</td>
-              <td class="none">nothing</td>
+              <td>Eyeballed on the same rows that raised the question</td>
+              <td class="none">No — you only find what you thought to look for</td>
+              <td>Nothing</td>
             </tr>
             <tr>
               <td>Ask a model to explain</td>
-              <td>Plausibility of the narrative</td>
+              <td>Nothing checks it; fluency stands in for evidence</td>
+              <td class="none">No — it always has an explanation</td>
               <td>A chat transcript</td>
             </tr>
             <tr>
               <td>Iterate on the benchmark</td>
-              <td>The same benchmark that surfaced the problem</td>
+              <td>The same benchmark you tuned against</td>
+              <td class="none">No — the number only moves up</td>
               <td>A score history</td>
+            </tr>
+            <tr>
+              <td>Hand-run an ablation</td>
+              <td>A comparison designed after seeing the data</td>
+              <td class="none">Rarely — you stop when one works</td>
+              <td>A notebook, until it goes stale</td>
             </tr>
             <tr class="us">
               <td>EvalVitals</td>
-              <td>Held-out cases, e-BH corrected, paired against the unmodified baseline</td>
-              <td>Every hypothesis, verdict and line of generated code, logged against a published JSON Schema</td>
+              <td>Cases sealed before the analysis began, paired against the unmodified baseline, corrected for every signal that was tried</td>
+              <td>Yes — and on the committed run, it did</td>
+              <td>Every hypothesis, verdict and line of generated code, against a published schema</td>
             </tr>
           </tbody>
         </table>
@@ -961,8 +981,9 @@
           </div>
         </div>
         <figcaption>
-          Stratified by outcome, deterministic. Multiplicity across the candidate
-          family is controlled with e-BH; each repair is compared against the
+          Stratified by outcome, deterministic. Testing many candidate signals
+          inflates the odds that one looks good by luck, so verdicts are
+          corrected for how many were tried; each repair is compared against the
           unchanged baseline with a paired test.
         </figcaption>
       </figure>
@@ -1022,26 +1043,6 @@
           <p>You staff senior engineers to sit inside each customer's failures. Run the loop first and the engagement opens with a diagnosed mechanism instead of spending three weeks arriving at one.</p>
         </div>
       </div>
-
-      <div class="hl">
-        <div class="eyebrow">What it replaces</div>
-        <p>
-          Today this is a person. A forward-deployed engineer lands on the
-          account, probes the customer's failures by hand, forms a theory, tries
-          fixes, and writes it up — weeks of senior time per customer, and the
-          reasoning leaves when they do. <b>The loop is the diagnostic half of
-          that engagement, unattended and on the record.</b> What stays human is
-          the part an FDE is actually worth paying for: which failures matter to
-          this customer, and whether to spend the cluster.
-        </p>
-      </div>
-      <p>
-        That is the difference between a service priced in headcount and one
-        priced in GPU-hours: the escalated investigation projected in
-        <b>02 / example</b> comes to $64.40 of compute, against an FDE-week for
-        the same diagnosis. The judgement does not go away — the weeks of manual
-        probing that precede it do.
-      </p>
 
     </div>
   </section>
