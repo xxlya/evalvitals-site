@@ -399,18 +399,32 @@
   .cmp-wrap { overflow-x: auto; min-width: 0; }
   table.cmp { border-collapse: collapse; width: 100%; min-width: 50rem; font-size: 0.86rem; }
   table.cmp th, table.cmp td {
-    text-align: left; padding: 0.7rem 0.85rem; vertical-align: top;
-    border-bottom: 1px solid var(--hairline); line-height: 1.45;
+    text-align: left; padding: 0.85rem 0.9rem; vertical-align: top;
+    border-bottom: 1px solid var(--hairline); line-height: 1.5;
+    color: var(--ink-2);
   }
   table.cmp thead th {
     font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em;
     text-transform: uppercase; color: var(--muted); font-weight: 600;
     border-bottom: 1px solid var(--ink-2);
   }
+  /* Fixed proportions — otherwise the longest cell decides the layout and the
+     verdict column gets squeezed to a two-word ribbon. */
+  table.cmp th:nth-child(1) { width: 19%; }
+  table.cmp th:nth-child(2) { width: 33%; }
+  table.cmp th:nth-child(3) { width: 26%; }
+  table.cmp th:nth-child(4) { width: 22%; }
   table.cmp td:first-child { color: var(--ink); font-weight: 560; white-space: nowrap; }
   table.cmp tr.us td { background: var(--accent-dim); }
   table.cmp tr.us td:first-child { color: var(--accent); font-weight: 660; }
-  table.cmp .none { color: var(--refuted); font-family: var(--mono); font-size: 0.78rem; }
+  /* The verdict reads as a token plus a reason: colour carries the answer, the
+     clause stays body text so it is still a sentence. */
+  table.cmp .verdict b {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.09em;
+    text-transform: uppercase; font-weight: 700;
+  }
+  table.cmp .verdict.no b  { color: var(--refuted); }
+  table.cmp .verdict.yes b { color: var(--confirmed); }
 
   /* ---- ledger ---- */
   .ledger { display: flex; flex-wrap: wrap; gap: 0.4rem; }
@@ -903,17 +917,6 @@
         before the analysis began.
       </p>
 
-      <div class="hl">
-        <div class="eyebrow">Why this is the efficient path</div>
-        <p>
-          Guessing is expensive because most guesses are wrong and you pay full
-          training cost to find out. Testing a hypothesis on held-out cases costs
-          a fraction of a fine-tune — so <b>the statistics are what keep the GPU
-          bill down.</b> By the time a repair reaches parameter space, the
-          mechanism has already survived a test it could have failed.
-        </p>
-      </div>
-
       <p>
         Every approach below returns an answer. What separates them is whether
         that answer could have come back negative, and what is left behind once
@@ -925,40 +928,40 @@
             <tr>
               <th>Approach</th>
               <th>How the claim is checked</th>
-              <th>Can it come back “no”?</th>
-              <th>What survives the session</th>
+              <th>Could it have said no?</th>
+              <th>What survives</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Read the failure table</td>
-              <td>Eyeballed on the same rows that raised the question</td>
-              <td class="none">No — you only find what you thought to look for</td>
+              <td>Eyeballed on the rows that raised the question</td>
+              <td class="verdict no"><b>No</b> — you find only what you looked for</td>
               <td>Nothing</td>
             </tr>
             <tr>
               <td>Ask a model to explain</td>
               <td>Nothing checks it; fluency stands in for evidence</td>
-              <td class="none">No — it always has an explanation</td>
+              <td class="verdict no"><b>No</b> — it always has an answer</td>
               <td>A chat transcript</td>
             </tr>
             <tr>
               <td>Iterate on the benchmark</td>
               <td>The same benchmark you tuned against</td>
-              <td class="none">No — the number only moves up</td>
+              <td class="verdict no"><b>No</b> — the number only moves up</td>
               <td>A score history</td>
             </tr>
             <tr>
               <td>Hand-run an ablation</td>
               <td>A comparison designed after seeing the data</td>
-              <td class="none">Rarely — you stop when one works</td>
+              <td class="verdict no"><b>Rarely</b> — you stop when one works</td>
               <td>A notebook, until it goes stale</td>
             </tr>
             <tr class="us">
               <td>EvalVitals</td>
-              <td>Cases sealed before the analysis began, paired against the unmodified baseline, corrected for every signal that was tried</td>
-              <td>Yes — and on the committed run, it did</td>
-              <td>Every hypothesis, verdict and line of generated code, against a published schema</td>
+              <td>Cases sealed before the analysis began; scored against the untouched baseline</td>
+              <td class="verdict yes"><b>Yes</b> — and on the committed run, it did</td>
+              <td>Hypotheses, verdicts and the code that ran, against a published schema</td>
             </tr>
           </tbody>
         </table>
@@ -987,6 +990,18 @@
           unchanged baseline with a paired test.
         </figcaption>
       </figure>
+
+      <div class="hl">
+        <div class="eyebrow">Why this is also the cheaper path</div>
+        <p>
+          Guessing is expensive because most guesses are wrong and you pay full
+          training cost to find out. Testing a hypothesis on held-out cases costs
+          a fraction of a fine-tune — so <b>the statistics are what keep the GPU
+          bill down.</b> By the time a repair reaches parameter space, the
+          mechanism has already survived a test it could have failed.
+        </p>
+      </div>
+
       <p class="thesis">
         A run may end without a shipped repair — on the committed example, three
         of four signals failed adjudication and no candidate below L4 beat the
