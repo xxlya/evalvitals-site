@@ -909,66 +909,89 @@
   <section class="row">
     <div class="tick">04 / trust</div>
     <div class="stack">
-      <h2>Hypothesis testing, not hunches</h2>
+      <h2>Ideas are cheap. Finding out which one is right is not.</h2>
       <p>
-        Repairing a model is an experimental problem, so the loop runs an
-        experimental protocol: state a falsifiable claim about the mechanism,
-        predict what follows if it is true, test that prediction on data reserved
-        before the analysis began.
+        Repairing a model was never blocked on ideas. An experienced
+        experimentalist can name ten plausible mechanisms; an agent will happily
+        name fifty. The bottleneck is that checking one of them the obvious way
+        costs a full fine-tune — so in practice nobody checks them all, and
+        whichever story sounded best is the one that gets funded.
+      </p>
+      <p>
+        And a fluent story is indistinguishable from a recalled one. A model
+        asked why another model fails can answer from a paper it read in
+        training, or from a benchmark whose answers it has already seen. Nothing
+        in the answer tells you which — or whether it reasoned at all.
       </p>
 
+      <h3 style="margin-top:1.4rem">What the loop does instead</h3>
+      <div class="method">
+        <div>
+          <div class="n">01</div>
+          <div class="s"><b>Draw candidates from somewhere checkable.</b> Published repair results and the memory of previous runs, rather than a mechanism invented at the moment of asking.</div>
+        </div>
+        <div>
+          <div class="n">02</div>
+          <div class="s"><b>Filter on evidence, not plausibility.</b> Every candidate is scored on cases sealed before the analysis began and corrected for how many were tried — which costs a fraction of a fine-tune, so the statistics are what keep the GPU bill down.</div>
+        </div>
+        <div>
+          <div class="n">03</div>
+          <div class="s"><b>Execute only what survived.</b> A repair that fails to beat the untouched baseline is recorded as unvalidated, with the tier it would need. It does not ship, and it does not spend a cluster.</div>
+        </div>
+      </div>
+
       <p>
-        Every approach below returns an answer. What separates them is whether
-        that answer could have come back negative, and what is left behind once
-        the session ends:
+        Every approach below produces a fix worth trying. What separates them is
+        where that fix came from, what it costs to discover it was wrong, and
+        whether you can tell it apart from a guess:
       </p>
       <div class="cmp-wrap">
         <table class="cmp">
           <thead>
             <tr>
               <th>Approach</th>
-              <th>How the claim is checked</th>
-              <th>Could it have said no?</th>
-              <th>What survives</th>
+              <th>Where the fix comes from</th>
+              <th>Cost to learn it was wrong</th>
+              <th>Can you tell it from a guess?</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Read the failure table</td>
-              <td>Eyeballed on the rows that raised the question</td>
-              <td class="verdict no"><b>No</b> — you find only what you looked for</td>
-              <td>Nothing</td>
+              <td>Hire an experimentalist</td>
+              <td>Experience and intuition</td>
+              <td>Weeks of senior time, per model</td>
+              <td class="verdict no"><b>Partly</b> — and the reasoning leaves when they do</td>
             </tr>
             <tr>
-              <td>Ask a model to explain</td>
-              <td>Nothing checks it; fluency stands in for evidence</td>
-              <td class="verdict no"><b>No</b> — it always has an answer</td>
-              <td>A chat transcript</td>
+              <td>Ask an LLM to explain</td>
+              <td>Invented on the spot, or recalled from training</td>
+              <td>A full fine-tune</td>
+              <td class="verdict no"><b>No</b> — it may have seen the answer</td>
+            </tr>
+            <tr>
+              <td>Let an agent enumerate</td>
+              <td>Dozens of plausible candidates at once</td>
+              <td>A full fine-tune, times however many you try</td>
+              <td class="verdict no"><b>No</b> — you cannot afford to check them</td>
             </tr>
             <tr>
               <td>Iterate on the benchmark</td>
-              <td>The same benchmark you tuned against</td>
+              <td>Whatever moves the leaderboard</td>
+              <td>Another training run, and the regression ships</td>
               <td class="verdict no"><b>No</b> — the number only moves up</td>
-              <td>A score history</td>
-            </tr>
-            <tr>
-              <td>Hand-run an ablation</td>
-              <td>A comparison designed after seeing the data</td>
-              <td class="verdict no"><b>Rarely</b> — you stop when one works</td>
-              <td>A notebook, until it goes stale</td>
             </tr>
             <tr class="us">
               <td>EvalVitals</td>
-              <td>Cases sealed before the analysis began; scored against the untouched baseline</td>
-              <td class="verdict yes"><b>Yes</b> — and on the committed run, it did</td>
-              <td>Hypotheses, verdicts and the code that ran, against a published schema</td>
+              <td>Published repair results and the memory of past runs</td>
+              <td>One scoring pass on sealed cases</td>
+              <td class="verdict yes"><b>Yes</b> — the verdict is written on data the analysis never saw</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <p>
-        The guard that makes this work is the order of operations — the split is
+        What makes the last column true is the order of operations — the split is
         taken before exploration, so nothing found during analysis was tuned on
         the rows that later judge it:
       </p>
@@ -990,17 +1013,6 @@
           unchanged baseline with a paired test.
         </figcaption>
       </figure>
-
-      <div class="hl">
-        <div class="eyebrow">Why this is also the cheaper path</div>
-        <p>
-          Guessing is expensive because most guesses are wrong and you pay full
-          training cost to find out. Testing a hypothesis on held-out cases costs
-          a fraction of a fine-tune — so <b>the statistics are what keep the GPU
-          bill down.</b> By the time a repair reaches parameter space, the
-          mechanism has already survived a test it could have failed.
-        </p>
-      </div>
 
       <p class="thesis">
         A run may end without a shipped repair — on the committed example, three
