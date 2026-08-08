@@ -431,21 +431,21 @@
   }
   /* Fixed proportions — otherwise the longest cell decides the layout and the
      verdict column gets squeezed to a two-word ribbon. */
-  table.cmp th:nth-child(1) { width: 19%; }
-  table.cmp th:nth-child(2) { width: 33%; }
-  table.cmp th:nth-child(3) { width: 26%; }
-  table.cmp th:nth-child(4) { width: 22%; }
+  table.cmp th:nth-child(1) { width: 18%; }
+  table.cmp th:nth-child(2) { width: 27%; }
+  table.cmp th:nth-child(3) { width: 24%; }
+  table.cmp th:nth-child(4) { width: 31%; }
   table.cmp td:first-child { color: var(--ink); font-weight: 560; white-space: nowrap; }
   table.cmp tr.us td { background: var(--accent-dim); }
   table.cmp tr.us td:first-child { color: var(--accent); font-weight: 660; }
-  /* The verdict reads as a token plus a reason: colour carries the answer, the
-     clause stays body text so it is still a sentence. */
-  table.cmp .verdict b {
+  /* Each row names what its answer rests on: a mono token carries the colour,
+     the clause after it stays body text so the cell still reads as a sentence. */
+  table.cmp .basis b {
     font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.09em;
     text-transform: uppercase; font-weight: 700;
   }
-  table.cmp .verdict.no b  { color: var(--refuted); }
-  table.cmp .verdict.yes b { color: var(--confirmed); }
+  table.cmp .basis.weak b   { color: var(--refuted); }
+  table.cmp .basis.strong b { color: var(--confirmed); }
 
   /* ---- ledger ---- */
   .ledger { display: flex; flex-wrap: wrap; gap: 0.4rem; }
@@ -930,50 +930,45 @@
   <section class="row">
     <div class="tick">04 / trust</div>
     <div class="stack">
-      <h2>Ideas are cheap. Finding out which one is right is not.</h2>
+      <h2>Proposals are free. Proof is what you pay for.</h2>
       <p>
-        Repairing a model was never blocked on ideas. An experienced
+        Model repair has always been rich in ideas. An experienced
         experimentalist can name ten plausible mechanisms; an agent will happily
-        name fifty. The bottleneck is that checking one of them the obvious way
-        costs a full fine-tune — so in practice nobody checks them all, and
-        whichever story sounded best is the one that gets funded.
+        name fifty. Checking one of them the usual way costs a full fine-tune, so
+        teams check one or two and fund whichever story sounded best.
       </p>
       <p>
-        And a fluent story is indistinguishable from a recalled one. A model
-        asked why another model fails can answer from a paper it read in
-        training, or from a benchmark whose answers it has already seen. Nothing
-        in the answer tells you which — or whether it reasoned at all.
+        A fluent explanation also looks exactly like a recalled one. A model
+        asked why another model fails may answer from a paper it read during
+        training, or from a benchmark whose labels it has already seen. The
+        answer reads the same either way.
       </p>
 
       <h3 style="margin-top:1.4rem">What the loop does instead</h3>
       <div class="method">
         <div>
           <div class="n">01</div>
-          <div class="s"><b>Draw candidates from somewhere checkable.</b> Published repair results and the memory of previous runs, rather than a mechanism invented at the moment of asking.</div>
+          <div class="s"><b>Draw candidates from a checkable source.</b> Published repair results and the memory of previous runs supply the hypothesis, so each candidate arrives with a provenance you can look up.</div>
         </div>
         <div>
           <div class="n">02</div>
-          <div class="s"><b>Filter on evidence, not plausibility.</b> Every candidate is scored on cases sealed before the analysis began and corrected for how many were tried — which costs a fraction of a fine-tune, so the statistics are what keep the GPU bill down.</div>
+          <div class="s"><b>Filter on evidence.</b> Candidates are fitted and scored across cross-validation folds, then judged once on a separate sealed set — for a fraction of what a fine-tune costs, which is how the statistics keep the GPU bill down.</div>
         </div>
         <div>
           <div class="n">03</div>
-          <div class="s"><b>Execute only what survived.</b> A repair that fails to beat the untouched baseline is recorded as unvalidated, with the tier it would need. It does not ship, and it does not spend a cluster.</div>
+          <div class="s"><b>Execute what survives.</b> A repair earns the cluster by beating the untouched baseline; anything short of that is recorded as an open question, together with the tier it would need.</div>
         </div>
       </div>
 
-      <p>
-        Every approach below produces a fix worth trying. What separates them is
-        where that fix came from, what it costs to discover it was wrong, and
-        whether you can tell it apart from a guess:
-      </p>
+      <h3 style="margin-top:1.4rem">How this compares</h3>
       <div class="cmp-wrap">
         <table class="cmp">
           <thead>
             <tr>
               <th>Approach</th>
               <th>Where the fix comes from</th>
-              <th>Cost to learn it was wrong</th>
-              <th>Can you tell it from a guess?</th>
+              <th>Cost of a wrong guess</th>
+              <th>What the answer rests on</th>
             </tr>
           </thead>
           <tbody>
@@ -981,65 +976,67 @@
               <td>Hire an experimentalist</td>
               <td>Experience and intuition</td>
               <td>Weeks of senior time, per model</td>
-              <td class="verdict no"><b>Partly</b> — and the reasoning leaves when they do</td>
+              <td class="basis weak"><b>Judgment</b> — one person's track record, which leaves when they do</td>
             </tr>
             <tr>
               <td>Ask an LLM to explain</td>
-              <td>Invented on the spot, or recalled from training</td>
+              <td>Composed on the spot, or recalled from training</td>
               <td>A full fine-tune</td>
-              <td class="verdict no"><b>No</b> — it may have seen the answer</td>
+              <td class="basis weak"><b>Fluency</b> — the wording may come straight out of training data</td>
             </tr>
             <tr>
               <td>Let an agent enumerate</td>
               <td>Dozens of plausible candidates at once</td>
               <td>A full fine-tune, times however many you try</td>
-              <td class="verdict no"><b>No</b> — you cannot afford to check them</td>
+              <td class="basis weak"><b>Volume</b> — checking all of them outruns any budget</td>
             </tr>
             <tr>
               <td>Iterate on the benchmark</td>
               <td>Whatever moves the leaderboard</td>
-              <td>Another training run, and the regression ships</td>
-              <td class="verdict no"><b>No</b> — the number only moves up</td>
+              <td>Another training run, plus the regression it ships</td>
+              <td class="basis weak"><b>The score</b> — the same number you tuned against</td>
             </tr>
             <tr class="us">
               <td>EvalVitals</td>
               <td>Published repair results and the memory of past runs</td>
               <td>One scoring pass on sealed cases</td>
-              <td class="verdict yes"><b>Yes</b> — the verdict is written on data the analysis never saw</td>
+              <td class="basis strong"><b>Evidence</b> — cross-validated candidates, judged on data withheld from the analysis</td>
             </tr>
           </tbody>
         </table>
       </div>
 
+      <h3 style="margin-top:1.4rem">Where the evidence comes from</h3>
       <p>
-        What makes the last column true is the order of operations — the split is
-        taken before exploration, so nothing found during analysis was tuned on
-        the rows that later judge it:
+        The order of operations is what makes that last row hold. The split
+        happens before exploration begins, so every row that judges a signal
+        stayed outside the analysis that found it:
       </p>
       <figure>
         <div class="split">
           <div class="explore">
             <div class="k">Explore — 60%</div>
-            <div class="t"><b>The analysis sees this.</b> Charts, candidate signals, hypotheses, thresholds.</div>
+            <div class="t"><b>Cross-validated in here.</b> Candidates are fitted and scored across folds, so one that works on a single slice reveals itself early.</div>
           </div>
           <div class="heldout">
             <div class="k">Held out — 40%</div>
-            <div class="t"><b>Sealed until the verdict.</b> Frozen recipes are re-scored here, once.</div>
+            <div class="t"><b>A separate sealed set.</b> Frozen recipes meet it once, after the verdict is committed to.</div>
           </div>
         </div>
         <figcaption>
-          Stratified by outcome, deterministic. Testing many candidate signals
-          inflates the odds that one looks good by luck, so verdicts are
-          corrected for how many were tried; each repair is compared against the
-          unchanged baseline with a paired test.
+          Stratified by outcome, deterministic. Cross-validation inside the
+          exploration split ranks the candidates; the sealed set decides them.
+          Verdicts are corrected for how many signals were tried, and each repair
+          meets the unchanged baseline in a paired test.
         </figcaption>
       </figure>
 
       <p class="thesis">
-        A run may end without a shipped repair — on the committed example, three
-        of four signals failed adjudication and no candidate below L4 beat the
-        baseline. Knowing a mechanism is unvalidated, before spending a cluster
-        on it, is the cheapest result the loop can return.
+        A run can end with a question rather than a repair — on the committed
+        example, one signal of four survived adjudication, and every candidate
+        below L4 finished level with the baseline. Learning that a mechanism
+        remains open, before a cluster pays for it, is the cheapest result the
+        loop returns.
       </p>
     </div>
   </section>
