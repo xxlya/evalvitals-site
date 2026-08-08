@@ -911,20 +911,16 @@
     <div class="stack">
       <h2>From hypothesis to verdict</h2>
       <p>
-        Proposing a diagnosis is the easy half. An experienced experimentalist
-        can list ten plausible mechanisms in an afternoon; an agent will list
-        fifty — and a fluent explanation from either may turn out to be one
-        recalled from a paper, or from a benchmark whose labels it already holds.
-        Deciding between them takes verification.
+        EvalVitals verifies a diagnosis before it becomes a repair. A senior
+        researcher can list ten plausible mechanisms for a failure; an agent will
+        list fifty. Fluent explanations are easy to produce, and the loop tells
+        you which of them hold on your data.
       </p>
       <p>
-        EvalVitals runs both halves. While the analysis explores, candidate
-        mechanisms are fitted and scored under <b>cross-validation</b>, so a
-        signal that holds on a single slice alone reveals itself early. Whatever
-        survives is verified once on a <b>held-out split sealed before
-        exploration began</b>, with verdicts corrected for how many candidates
-        were tried and every repair measured against the unmodified baseline in a
-        <b>paired test</b>.
+        Each candidate is <b>cross-validated</b> during analysis, then scored
+        once on a <b>held-out split</b> sealed before that analysis began.
+        Verdicts are corrected for the number of candidates tried. Every repair
+        is measured against your unmodified baseline with a paired test.
       </p>
 
       <h3 style="margin-top:1.4rem">Against current practice</h3>
@@ -1141,8 +1137,7 @@
   </script>
 
   <footer>
-    <div>EvalVitals — failure analysis for open-weight models</div>
-    <div>Every figure on this page is reproducible from the repository.</div>
+    <div>EvalVitals — model health for open-weight models: diagnosed, repaired, verified</div>
   </footer>
 
 </div>
