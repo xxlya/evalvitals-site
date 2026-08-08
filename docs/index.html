@@ -286,15 +286,6 @@
   .diagram .note-ok { fill: var(--confirmed); }
   figcaption { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); line-height: 1.55; max-width: var(--measure); }
 
-  /* held-out split bar */
-  .split { display: flex; width: 100%; border: 1px solid var(--hairline); border-radius: 3px; overflow: hidden; }
-  .split > div { padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.15rem; }
-  .split .explore { flex: 6; background: var(--accent-dim); border-right: 1px solid var(--accent); }
-  .split .heldout { flex: 4; background: var(--panel); }
-  .split .k { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-  .split .t { font-size: 0.87rem; line-height: 1.4; color: var(--ink-2); }
-  .split .t b { color: var(--ink); font-weight: 600; }
-
   /* ---- scenarios ---- */
   .scen { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
   .scen > div {
@@ -402,19 +393,6 @@
   }
   .hl p { margin: 0; font-size: 1.02rem; line-height: 1.5; max-width: none; }
   .hl b { font-weight: 640; }
-
-  /* ---- method sequence ---- */
-  .method { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--hairline); }
-  .method > div {
-    display: grid; grid-template-columns: 2.2rem minmax(0, 1fr);
-    gap: 0 0.9rem; padding: 0.8rem 0; border-bottom: 1px solid var(--hairline);
-  }
-  .method .n {
-    font-family: var(--mono); font-size: 0.68rem; color: var(--accent);
-    letter-spacing: 0.08em; padding-top: 0.22rem;
-  }
-  .method .s { font-size: 0.95rem; line-height: 1.45; color: var(--ink-2); }
-  .method .s b { color: var(--ink); font-weight: 620; }
 
   /* ---- comparison ---- */
   .cmp-wrap { overflow-x: auto; min-width: 0; }
@@ -551,7 +529,7 @@
     .topbar::after { display: none; }
   }
   @media (prefers-contrast: more) {
-    .io > div, .hl, .term, table.cmp td, .split { border-color: var(--ink) !important; }
+    .io > div, .hl, .term, table.cmp td { border-color: var(--ink) !important; }
     .io .k, figcaption, .tick { color: var(--ink-2) !important; }
     a { text-decoration-color: currentColor; }
   }
@@ -930,7 +908,7 @@
   <section class="row">
     <div class="tick">04 / trust</div>
     <div class="stack">
-      <h2>Proposals are free. Proof is what you pay for.</h2>
+      <h2>Evidence before the fine-tune</h2>
       <p>
         Model repair has always been rich in ideas. An experienced
         experimentalist can name ten plausible mechanisms; an agent will happily
@@ -944,23 +922,7 @@
         answer reads the same either way.
       </p>
 
-      <h3 style="margin-top:1.4rem">What the loop does instead</h3>
-      <div class="method">
-        <div>
-          <div class="n">01</div>
-          <div class="s"><b>Draw candidates from a checkable source.</b> Published repair results and the memory of previous runs supply the hypothesis, so each candidate arrives with a provenance you can look up.</div>
-        </div>
-        <div>
-          <div class="n">02</div>
-          <div class="s"><b>Filter on evidence.</b> Candidates are fitted and scored across cross-validation folds, then judged once on a separate sealed set — for a fraction of what a fine-tune costs, which is how the statistics keep the GPU bill down.</div>
-        </div>
-        <div>
-          <div class="n">03</div>
-          <div class="s"><b>Execute what survives.</b> A repair earns the cluster by beating the untouched baseline; anything short of that is recorded as an open question, together with the tier it would need.</div>
-        </div>
-      </div>
-
-      <h3 style="margin-top:1.4rem">How this compares</h3>
+      <h3 style="margin-top:1.4rem">Five ways to pick a fix</h3>
       <div class="cmp-wrap">
         <table class="cmp">
           <thead>
@@ -1000,36 +962,11 @@
               <td>EvalVitals</td>
               <td>Published repair results and the memory of past runs</td>
               <td>One scoring pass on sealed cases</td>
-              <td class="basis strong"><b>Evidence</b> — cross-validated candidates, judged on data withheld from the analysis</td>
+              <td class="basis strong"><b>Evidence</b> — cross-validated candidates, decided once on a separate sealed set</td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      <h3 style="margin-top:1.4rem">Where the evidence comes from</h3>
-      <p>
-        The order of operations is what makes that last row hold. The split
-        happens before exploration begins, so every row that judges a signal
-        stayed outside the analysis that found it:
-      </p>
-      <figure>
-        <div class="split">
-          <div class="explore">
-            <div class="k">Explore — 60%</div>
-            <div class="t"><b>Cross-validated in here.</b> Candidates are fitted and scored across folds, so one that works on a single slice reveals itself early.</div>
-          </div>
-          <div class="heldout">
-            <div class="k">Held out — 40%</div>
-            <div class="t"><b>A separate sealed set.</b> Frozen recipes meet it once, after the verdict is committed to.</div>
-          </div>
-        </div>
-        <figcaption>
-          Stratified by outcome, deterministic. Cross-validation inside the
-          exploration split ranks the candidates; the sealed set decides them.
-          Verdicts are corrected for how many signals were tried, and each repair
-          meets the unchanged baseline in a paired test.
-        </figcaption>
-      </figure>
 
       <p class="thesis">
         A run can end with a question rather than a repair — on the committed
