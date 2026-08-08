@@ -911,17 +911,20 @@
     <div class="stack">
       <h2>From hypothesis to verdict</h2>
       <p>
-        Explanations for why a model fails are easy to come by. An experienced
-        experimentalist can list ten plausible mechanisms in an afternoon; an
-        agent will list fifty. Checking one of them the usual way costs a full
-        fine-tune, so most teams test one or two and commit to whichever
-        explanation sounds most convincing.
+        Proposing a diagnosis is the easy half. An experienced experimentalist
+        can list ten plausible mechanisms in an afternoon; an agent will list
+        fifty — and a fluent explanation from either may turn out to be one
+        recalled from a paper, or from a benchmark whose labels it already holds.
+        Deciding between them takes verification.
       </p>
       <p>
-        And an explanation that reads well may simply be one the model
-        memorised. Asked why another model fails, it can answer from a paper it
-        saw during training, or from a benchmark whose labels it already holds.
-        Reasoning and recall produce the same fluent paragraph.
+        EvalVitals runs both halves. While the analysis explores, candidate
+        mechanisms are fitted and scored under <b>cross-validation</b>, so a
+        signal that holds on a single slice alone reveals itself early. Whatever
+        survives is verified once on a <b>held-out split sealed before
+        exploration began</b>, with verdicts corrected for how many candidates
+        were tried and every repair measured against the unmodified baseline in a
+        <b>paired test</b>.
       </p>
 
       <h3 style="margin-top:1.4rem">Against current practice</h3>
