@@ -388,10 +388,10 @@
   }
   /* Fixed proportions — otherwise the longest cell decides the layout and the
      verdict column gets squeezed to a two-word ribbon. */
-  table.cmp th:nth-child(1) { width: 18%; }
-  table.cmp th:nth-child(2) { width: 27%; }
-  table.cmp th:nth-child(3) { width: 24%; }
-  table.cmp th:nth-child(4) { width: 31%; }
+  table.cmp th:nth-child(1) { width: 17%; }
+  table.cmp th:nth-child(2) { width: 26%; }
+  table.cmp th:nth-child(3) { width: 29%; }
+  table.cmp th:nth-child(4) { width: 28%; }
   table.cmp td:first-child { color: var(--ink); font-weight: 560; white-space: nowrap; }
   table.cmp tr.us td { background: var(--accent-dim); }
   table.cmp tr.us td:first-child { color: var(--accent); font-weight: 660; }
@@ -887,7 +887,7 @@
   <section class="row">
     <div class="tick">04 / trust</div>
     <div class="stack">
-      <h2>Evidence before the fine-tune</h2>
+      <h2>From hypothesis to verdict</h2>
       <p>
         Model repair has always been rich in ideas. An experienced
         experimentalist can name ten plausible mechanisms; an agent will happily
@@ -901,47 +901,41 @@
         answer reads the same either way.
       </p>
 
-      <h3 style="margin-top:1.4rem">Five ways to pick a fix</h3>
+      <h3 style="margin-top:1.4rem">Against current practice</h3>
       <div class="cmp-wrap">
         <table class="cmp">
           <thead>
             <tr>
               <th>Approach</th>
-              <th>Where the fix comes from</th>
-              <th>Cost of a wrong guess</th>
+              <th>How the hypothesis is formed</th>
+              <th>How it is tested</th>
               <th>What the answer rests on</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Hire an experimentalist</td>
-              <td>Experience and intuition</td>
-              <td>Weeks of senior time, per model</td>
+              <td>Experience and intuition, a handful of candidates at a time</td>
+              <td>An ablation designed after seeing the data, weeks of senior time per model</td>
               <td class="basis weak"><b>Judgment</b> — one person's track record, which leaves when they do</td>
             </tr>
             <tr>
               <td>Ask an LLM to explain</td>
               <td>Composed on the spot, or recalled from training</td>
-              <td>A full fine-tune</td>
+              <td>Read for plausibility</td>
               <td class="basis weak"><b>Fluency</b> — the wording may come straight out of training data</td>
             </tr>
             <tr>
               <td>Let an agent enumerate</td>
               <td>Dozens of plausible candidates at once</td>
-              <td>A full fine-tune, times however many you try</td>
+              <td>A full fine-tune for each one you can afford</td>
               <td class="basis weak"><b>Volume</b> — checking all of them outruns any budget</td>
-            </tr>
-            <tr>
-              <td>Iterate on the benchmark</td>
-              <td>Whatever moves the leaderboard</td>
-              <td>Another training run, plus the regression it ships</td>
-              <td class="basis weak"><b>The score</b> — the same number you tuned against</td>
             </tr>
             <tr class="us">
               <td>EvalVitals</td>
-              <td>Published repair results and the memory of past runs</td>
-              <td>One scoring pass on sealed cases</td>
-              <td class="basis strong"><b>Evidence</b> — cross-validated candidates, decided once on a separate sealed set</td>
+              <td>Drawn from published repair results and the memory of past runs</td>
+              <td>Cross-validated while exploring, then decided once on a separate sealed set</td>
+              <td class="basis strong"><b>Evidence</b> — a verdict on reserved data, reproducible from the log</td>
             </tr>
           </tbody>
         </table>
